@@ -3,15 +3,33 @@ import pyttsx3
 from datetime import datetime
 import pytz
 import webbrowser
+import requests
 engine=pyttsx3.init()
 engine.setProperty('volume',2.0)
 engine.setProperty('rate',150)
 def date_time():
     dt = datetime.now(pytz.timezone('Asia/karachi'))
     return dt.strftime("%d-%m-%Y %H : %M : %S")
+def get_weather(city):
+    api_key = "39c04d159e4a07b5af607b21a742f02d"
+    link=f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric'
+    response1=requests.get(link)
+    data=response1.json()
+    if response1.status_code==200:
+        weather_descr=data['weather'][0]['description']
+        temperature=data['main']['temp']
+        return f"The weather in {city.title()}' is {weather_descr} and temperature is {temperature}°C."
+    else:
+        return "invalid"
 def chatbot_response(user_message):
     if "date" in user_message.lower() or "time" in user_message.lower():
-        return f"The current date and time is {date_time()}"
+        return "The current date and time is {date_time()}"
+    elif "weather" in user_message.lower():
+        if "weather in" in user_message.lower():
+            city=user_message.split("weather in")[-1].strip()
+            return get_weather(city)
+        else:
+            return f"Please provide the name in that manner, e.g:'weather in london'."
     elif "youtube" in user_message.lower():
         youtube_url="https://www.youtube.com"
         webbrowser.open(youtube_url)
