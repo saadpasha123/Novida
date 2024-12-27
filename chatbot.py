@@ -10,6 +10,16 @@ engine.setProperty('rate',150)
 def date_time():
     dt = datetime.now(pytz.timezone('Asia/karachi'))
     return dt.strftime("%d-%m-%Y %H : %M : %S")
+def news():
+    Api_key="b893487258624a0086e2704bd7953cf6"
+    key=f'https://newsapi.org/v2/top-headlines?country=us&apiKey={Api_key}'
+    response2=requests.get(key)
+    data1=response2.json()
+    if response2.status_code==200:
+        headline=[article['title'] for article in data1['articles'][:9]]
+        return "The top headline:\n"+"\n".join(headline)
+    else:
+        return "nothing happend today"
 def get_weather(city):
     api_key = "39c04d159e4a07b5af607b21a742f02d"
     link=f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric'
@@ -30,6 +40,8 @@ def chatbot_response(user_message):
             return get_weather(city)
         else:
             return f"Please provide the name in that manner, e.g:'weather in london'."
+    elif "news" in user_message.lower():
+        return news()
     elif "youtube" in user_message.lower():
         youtube_url="https://www.youtube.com"
         webbrowser.open(youtube_url)
