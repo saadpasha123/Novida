@@ -1,9 +1,10 @@
-from tkinter import*
+from tkinter import *
 import pyttsx3
 from datetime import datetime
 import pytz
 import webbrowser
 import requests
+from tkinter import messagebox
 engine=pyttsx3.init()
 engine.setProperty('volume',2.0)
 engine.setProperty('rate',150)
@@ -33,7 +34,7 @@ def get_weather(city):
         return "invalid"
 def chatbot_response(user_message):
     if "date" in user_message.lower() or "time" in user_message.lower():
-        return "The current date and time is {date_time()}"
+        return f"The current date and time is {date_time()}"
     elif "weather" in user_message.lower():
         if "weather in" in user_message.lower():
             city=user_message.split("weather in")[-1].strip()
@@ -69,9 +70,12 @@ def send_message():
     bot_reply=chatbot_response(user_message)
     chatbox.insert(END,f"Chatbot: {bot_reply}\n")
     engine.say(bot_reply)
-    engine.runAndWait()
+    engine.runAndWait() 
 def clear_message():
     chatbox.delete(1.0,END)
+def close_window():
+    if messagebox.askokcancel("Quite","Do you want to quite this window"):
+        window.destroy()
 window=Tk()
 window.geometry('560x560')
 window.title("Novida")
@@ -86,4 +90,5 @@ chatbox=Text(window,height=20,width=75,bg="black",fg="white")
 chatbox.pack()
 user_input=Entry(window)
 user_input.pack()
+window.protocol("WM_DELETE_WINDOW",close_window)
 window.mainloop()
